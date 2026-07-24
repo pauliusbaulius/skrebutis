@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skrebutis</title>
+  <style>
+    :root {
+      --ink: #2d2140;
+      --mute: #7a6d8c;
+      --paper: #fff8fc;
+      --line: #eddff0;
+      --success: linear-gradient(135deg, #43e97b, #38f9d7);
+      --error: linear-gradient(135deg, #f857a6, #ff5858);
+      --warning: linear-gradient(135deg, #f7971e, #ffd200);
+      --info: linear-gradient(135deg, #4facfe, #00f2fe);
+      --grape: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    * { margin: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 60% 50% at 0% 0%, rgba(102, 126, 234, 0.18), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 5%, rgba(248, 87, 166, 0.14), transparent 50%),
+        radial-gradient(ellipse 40% 35% at 80% 100%, rgba(67, 233, 123, 0.12), transparent 50%),
+        var(--paper);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+
+    .brand {
+      font-size: clamp(2.6rem, 10vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 8px;
+      transform: rotate(-1.5deg);
+      transform-origin: left center;
+      width: fit-content;
+      background: var(--grape);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .tagline {
+      color: var(--mute);
+      font-size: 1.05rem;
+      font-weight: 550;
+      max-width: 28ch;
+      margin: 0 0 18px 4px;
+      transform: rotate(0.4deg);
+    }
+
+    .hero-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .install {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      padding: 10px 14px;
+      user-select: all;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    .install em {
+      font-style: normal;
+      background: var(--grape);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    button, .btn {
+      appearance: none;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 2px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    button:hover, .btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+    button:active, .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .btn-primary {
+      background: var(--grape);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 28px 0 10px;
+      transform: rotate(-0.6deg);
+      width: fit-content;
+    }
+
+    .panel {
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 5px 5px 0 rgba(102, 126, 234, 0.35);
+    }
+
+    .block + .block { margin-top: 12px; }
+
+    .block > .label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--mute);
+      margin-bottom: 6px;
+    }
+
+    .opts { display: flex; flex-wrap: wrap; gap: 5px; }
+    .opts input { position: absolute; opacity: 0; pointer-events: none; }
+    .opts label {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid transparent;
+      color: var(--mute);
+      background: #f6effa;
+    }
+    .opts label:hover { color: var(--ink); }
+    .opts input:checked + label {
+      color: var(--ink);
+      border-color: var(--ink);
+      background: #fff;
+    }
+    .opts input[value="success"]:checked + label { background: var(--success); color: #064e2b; border-color: #064e2b; }
+    .opts input[value="error"]:checked + label { background: var(--error); color: #fff; border-color: #7a1030; }
+    .opts input[value="warning"]:checked + label { background: var(--warning); color: #5c3a00; border-color: #5c3a00; }
+    .opts input[value="info"]:checked + label { background: var(--info); color: #003049; border-color: #003049; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+    .row .wide { grid-column: 1 / -1; }
+
+    .field-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--mute);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      appearance: none;
+      width: 100%;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink);
+      background: #faf6fd;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      padding: 9px 12px;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--ink);
+    }
+    input::placeholder { color: #b5a8c4; }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--mute);
+      user-select: none;
+    }
+    .check input { width: 15px; height: 15px; accent-color: #764ba2; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-left: 6px;
+      vertical-align: middle;
+      background: var(--warning);
+      color: #5c3a00;
+      border: 1.5px solid #5c3a00;
+      transform: rotate(3deg);
+    }
+
+    pre {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 0.76rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      box-shadow: 4px 4px 0 rgba(248, 87, 166, 0.25);
+    }
+    pre .c { color: #a899b8; }
+    pre .k { color: #667eea; font-weight: 700; }
+    pre .f { color: #4facfe; font-weight: 700; }
+    pre .s { color: #f857a6; }
+    pre .n { color: #f7971e; }
+
+    .docs > p {
+      color: var(--mute);
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+    .docs h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 22px 0 6px;
+    }
+    .docs h3 + p {
+      font-size: 0.85rem;
+      color: var(--mute);
+      margin-bottom: 8px;
+    }
+    .docs code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.8rem;
+      background: #f0e6ff;
+      color: #5b3a8a;
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+
+    .footer {
+      margin-top: 36px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--mute);
+    }
+    .footer a {
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration: none;
+      border-bottom: 2px solid #f857a6;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="brand">skrebutis</h1>
+    <p class="tagline">another slop toast lib, enjoy</p>
+    <div class="hero-row">
+      <code class="install">npm i <em>skrebutis</em></code>
+      <button type="button" class="btn-primary" onclick="fireCreator()">fire a toast</button>
+    </div>
+
+    <h2>playground <span class="chip">click stuff</span></h2>
+    <div class="panel">
+      <div class="block">
+        <span class="label">type</span>
+        <div class="opts">
+          <input type="radio" name="type" id="type-success" value="success" checked>
+          <label for="type-success">success</label>
+          <input type="radio" name="type" id="type-info" value="info">
+          <label for="type-info">info</label>
+          <input type="radio" name="type" id="type-warning" value="warning">
+          <label for="type-warning">warning</label>
+          <input type="radio" name="type" id="type-error" value="error">
+          <label for="type-error">error</label>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="label">animation</span>
+        <div class="opts">
+          <input type="radio" name="animation" id="anim-grow" value="grow" checked>
+          <label for="anim-grow">grow</label>
+          <input type="radio" name="animation" id="anim-shrink" value="shrink">
+          <label for="anim-shrink">shrink</label>
+          <input type="radio" name="animation" id="anim-shake" value="shake">
+          <label for="anim-shake">shake</label>
+          <input type="radio" name="animation" id="anim-slide" value="slide">
+          <label for="anim-slide">slide</label>
+          <input type="radio" name="animation" id="anim-bounce" value="bounce">
+          <label for="anim-bounce">bounce</label>
+          <input type="radio" name="animation" id="anim-flip" value="flip">
+          <label for="anim-flip">flip</label>
+          <input type="radio" name="animation" id="anim-pop" value="pop">
+          <label for="anim-pop">pop</label>
+          <input type="radio" name="animation" id="anim-random" value="random">
+          <label for="anim-random">random</label>
+        </div>
+      </div>
+
+      <div class="block">
+        <span class="label">position</span>
+        <div class="opts">
+          <input type="radio" name="position" id="pos-tr" value="top-right" checked>
+          <label for="pos-tr">top right</label>
+          <input type="radio" name="position" id="pos-tl" value="top-left">
+          <label for="pos-tl">top left</label>
+          <input type="radio" name="position" id="pos-tc" value="top-center">
+          <label for="pos-tc">top center</label>
+          <input type="radio" name="position" id="pos-br" value="bottom-right">
+          <label for="pos-br">bottom right</label>
+          <input type="radio" name="position" id="pos-bl" value="bottom-left">
+          <label for="pos-bl">bottom left</label>
+          <input type="radio" name="position" id="pos-bc" value="bottom-center">
+          <label for="pos-bc">bottom center</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="block">
+          <span class="label">size</span>
+          <div class="opts">
+            <input type="radio" name="size" id="size-normal" value="normal" checked>
+            <label for="size-normal">normal</label>
+            <input type="radio" name="size" id="size-large" value="large">
+            <label for="size-large">large</label>
+            <input type="radio" name="size" id="size-random" value="random">
+            <label for="size-random">random</label>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="duration">duration (ms)</label>
+          <input type="number" id="duration" value="4000" step="500" min="0">
+        </div>
+        <div>
+          <label class="check">
+            <input type="checkbox" id="confetti">
+            confetti
+          </label>
+        </div>
+        <div class="wide">
+          <label class="field-label" for="message">message</label>
+          <input type="text" id="message" placeholder="empty = random message">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-primary" onclick="fireCreator()">fire</button>
+        <button type="button" onclick="fireAll()">all types</button>
+        <button type="button" onclick="burst()">burst</button>
+        <button type="button" onclick="promiseDemo()">promise</button>
+      </div>
+    </div>
+
+    <h2>full config</h2>
+    <pre>Toast.<span class="f">success</span>(<span class="s">"Deployed!"</span>, {
+  size: <span class="s">"large"</span>,          <span class="c">// normal | large | random</span>
+  animation: <span class="s">"shake"</span>,      <span class="c">// grow | shrink | shake | slide | bounce | flip | pop | random</span>
+  position: <span class="s">"top-center"</span>,  <span class="c">// top-right | top-left | top-center | bottom-*</span>
+  duration: <span class="n">5000</span>,          <span class="c">// ms, 0 = forever</span>
+  confetti: <span class="k">true</span>,          <span class="c">// success &amp; error only</span>
+  dismissible: <span class="k">true</span>,       <span class="c">// click to dismiss</span>
+  pauseOnHover: <span class="k">true</span>,
+  showProgress: <span class="k">true</span>,
+  icon: <span class="s">"🚀"</span>,            <span class="c">// overrides default</span>
+  maxToasts: <span class="n">10</span>,
+  onClose: () =&gt; {},
+});</pre>
+
+    <section class="docs" id="docs">
+      <h2>usage</h2>
+      <p>copy paste and go.</p>
+
+      <h3>native html</h3>
+      <p>save as <code>index.html</code>. no build step.</p>
+      <pre><span class="c">&lt;!DOCTYPE html&gt;</span>
+<span class="c">&lt;html lang="en"&gt;</span>
+<span class="c">&lt;head&gt;</span>
+  <span class="c">&lt;meta charset="UTF-8" /&gt;</span>
+  <span class="c">&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</span>
+  <span class="c">&lt;title&gt;skrebutis&lt;/title&gt;</span>
+<span class="c">&lt;/head&gt;</span>
+<span class="c">&lt;body&gt;</span>
+  <span class="c">&lt;button id="save"&gt;save&lt;/button&gt;</span>
+  <span class="c">&lt;button id="fail"&gt;fail&lt;/button&gt;</span>
+  <span class="c">&lt;button id="load"&gt;load&lt;/button&gt;</span>
+
+  <span class="c">&lt;script type="module"&gt;</span>
+    <span class="k">import</span> Toast <span class="k">from</span> <span class="s">"https://cdn.jsdelivr.net/npm/skrebutis/dist/skrebutis.min.js"</span>;
+
+    document.getElementById(<span class="s">"save"</span>).addEventListener(<span class="s">"click"</span>, () =&gt; {
+      Toast.<span class="f">success</span>(<span class="s">"Saved."</span>, { position: <span class="s">"bottom-right"</span> });
+    });
+
+    document.getElementById(<span class="s">"fail"</span>).addEventListener(<span class="s">"click"</span>, () =&gt; {
+      Toast.<span class="f">error</span>(<span class="s">"Could not save."</span>);
+    });
+
+    document.getElementById(<span class="s">"load"</span>).addEventListener(<span class="s">"click"</span>, () =&gt; {
+      <span class="k">const</span> request = <span class="k">new</span> Promise((resolve, reject) =&gt; {
+        setTimeout(() =&gt; (Math.random() &gt; <span class="n">0.3</span> ? resolve({ ok: <span class="k">true</span> }) : reject(<span class="k">new</span> Error(<span class="s">"timeout"</span>))), <span class="n">1200</span>);
+      });
+
+      Toast.<span class="f">promise</span>(request, {
+        loading: <span class="s">"Loading..."</span>,
+        success: <span class="s">"Ready."</span>,
+        error: (err) =&gt; <span class="s">`Failed: ${</span>err.message<span class="s">}`</span>,
+      }).catch(() =&gt; {});
+    });
+  <span class="c">&lt;/script&gt;</span>
+<span class="c">&lt;/body&gt;</span>
+<span class="c">&lt;/html&gt;</span></pre>
+
+      <h3>react</h3>
+      <p>vite + react. <code>npm i skrebutis</code>, then <code>src/App.tsx</code>:</p>
+      <pre><span class="k">import</span> { useState } <span class="k">from</span> <span class="s">"react"</span>;
+<span class="k">import</span> Toast <span class="k">from</span> <span class="s">"skrebutis"</span>;
+
+<span class="k">export default function</span> <span class="f">App</span>() {
+  <span class="k">const</span> [busy, setBusy] = useState(<span class="k">false</span>);
+
+  <span class="k">async function</span> <span class="f">save</span>() {
+    setBusy(<span class="k">true</span>);
+    <span class="k">try</span> {
+      <span class="k">await</span> Toast.<span class="f">promise</span>(
+        fetch(<span class="s">"/api/save"</span>, { method: <span class="s">"POST"</span> }).then((r) =&gt; {
+          <span class="k">if</span> (!r.ok) <span class="k">throw new</span> Error(<span class="s">"save failed"</span>);
+          <span class="k">return</span> r.json();
+        }),
+        {
+          loading: <span class="s">"Saving..."</span>,
+          success: <span class="s">"Saved."</span>,
+          error: (err) =&gt; (err <span class="k">instanceof</span> Error ? err.message : <span class="s">"Failed."</span>),
+        },
+        { position: <span class="s">"bottom-right"</span> }
+      );
+    } <span class="k">catch</span> {
+      <span class="c">/* toast already showed the error */</span>
+    } <span class="k">finally</span> {
+      setBusy(<span class="k">false</span>);
+    }
+  }
+
+  <span class="k">return</span> (
+    <span class="s">&lt;main style={{ padding: 24 }}&gt;</span>
+      <span class="s">&lt;button type="button" onClick={() =&gt; Toast.success("Hello from react")}&gt;</span>
+        say hi
+      <span class="s">&lt;/button&gt;</span>
+      <span class="s">&lt;button type="button" onClick={save} disabled={busy}&gt;</span>
+        {busy ? <span class="s">"saving..."</span> : <span class="s">"save"</span>}
+      <span class="s">&lt;/button&gt;</span>
+    <span class="s">&lt;/main&gt;</span>
+  );
+}</pre>
+    </section>
+
+    <p class="footer">
+      <a href="https://github.com/pauliusbaulius/skrebutis">github</a>
+      · mit · made for fun
+    </p>
+  </div>
+
+  <script type="module">
+    import Toast from './dist/skrebutis.min.js';
+    window.Toast = Toast;
+
+    const funMessages = {
+      success: [
+        'Saved. Probably.',
+        'Done — you can stop refreshing now.',
+        'That worked on the first try. Suspicious.',
+        'Changes are live.',
+        'Synced. Nothing exploded.',
+        'All good from here.',
+      ],
+      error: [
+        'Something broke. Not naming names.',
+        'That request bounced.',
+        'Couldn\'t finish that.',
+        'Nope. Try again in a bit.',
+        'Server said no.',
+        'Lost the plot halfway through.',
+      ],
+      warning: [
+        'Heads up — this might get weird.',
+        'You might want to double-check that.',
+        'Still works, but barely.',
+        'This is fine. Ish.',
+        'Quiet little red flag here.',
+        'Proceed, but maybe slowly.',
+      ],
+      info: [
+        'Just so you know.',
+        'Nothing urgent — FYI.',
+        'Background stuff finished.',
+        'Still here if you need me.',
+        'Quick note, then I\'ll hush.',
+        'Status unchanged. That\'s the news.',
+      ],
+    };
+
+    function randomMsg(type) {
+      const msgs = funMessages[type] || funMessages.success;
+      return msgs[Math.floor(Math.random() * msgs.length)];
+    }
+
+    function getOpts() {
+      return {
+        animation: document.querySelector('input[name="animation"]:checked').value,
+        position: document.querySelector('input[name="position"]:checked').value,
+        duration: parseInt(document.getElementById('duration').value, 10),
+        size: document.querySelector('input[name="size"]:checked').value,
+        confetti: document.getElementById('confetti').checked,
+      };
+    }
+
+    function getSelectedType() {
+      return document.querySelector('input[name="type"]:checked').value;
+    }
+
+    window.fireCreator = () => {
+      const type = getSelectedType();
+      const opts = getOpts();
+      const customMsg = document.getElementById('message').value.trim();
+      Toast[type](customMsg || randomMsg(type), opts);
+    };
+
+    document.getElementById('message').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); fireCreator(); }
+    });
+
+    window.fireAll = () => {
+      const opts = getOpts();
+      Toast.success(randomMsg('success'), opts);
+      setTimeout(() => Toast.info(randomMsg('info'), opts), 150);
+      setTimeout(() => Toast.warning(randomMsg('warning'), opts), 300);
+      setTimeout(() => Toast.error(randomMsg('error'), opts), 450);
+    };
+
+    window.burst = () => {
+      const opts = getOpts();
+      const anims = ['grow', 'shrink', 'shake', 'slide', 'bounce', 'flip', 'pop'];
+      const types = ['success', 'error', 'warning', 'info'];
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          const type = types[i % types.length];
+          Toast[type](randomMsg(type), { ...opts, animation: anims[i % anims.length] });
+        }, i * 120);
+      }
+    };
+
+    window.promiseDemo = () => {
+      const opts = getOpts();
+      const fakeRequest = new Promise((resolve, reject) => {
+        setTimeout(() => Math.random() > 0.3 ? resolve() : reject(), 2000);
+      });
+      Toast.promise(fakeRequest, {
+        loading: 'Loading...',
+        success: 'Ready.',
+        error: 'Failed.',
+      }, opts).catch(() => {});
+    };
+  </script>
+</body>
+</html>

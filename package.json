@@ -1,0 +1,49 @@
+{
+  "name": "skrebutis",
+  "version": "1.0.0",
+  "description": "Vibe coded toast library — one file, styles included.",
+  "type": "module",
+  "main": "./dist/skrebutis.min.js",
+  "module": "./dist/skrebutis.min.js",
+  "types": "./dist/skrebutis.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/skrebutis.d.ts",
+      "import": "./dist/skrebutis.min.js",
+      "default": "./dist/skrebutis.min.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:min && npm run build:declarations",
+    "build:min": "esbuild skrebutis.ts --minify --bundle --format=esm --outfile=dist/skrebutis.min.js",
+    "build:declarations": "tsc --project tsconfig.json",
+    "watch": "esbuild skrebutis.ts --minify --bundle --format=esm --outfile=dist/skrebutis.min.js --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pauliusbaulius/skrebutis.git"
+  },
+  "homepage": "https://pauliusbaulius.github.io/skrebutis/",
+  "bugs": {
+    "url": "https://github.com/pauliusbaulius/skrebutis/issues"
+  },
+  "keywords": [
+    "toast",
+    "notification",
+    "snackbar",
+    "popup",
+    "ui"
+  ],
+  "author": "pauliusbaulius",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.27.0",
+    "typescript": "~5.8"
+  }
+}
